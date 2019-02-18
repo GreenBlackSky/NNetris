@@ -35,7 +35,7 @@ class GameScene(Scene):
         super().update(events)
         self.game.update()
         if self.game.field_is_filled():
-            self.event_queue.append(Event(Event.Type.Quit, self))
+            self.emmit_event(Event.Type.Quit)
 
     def redraw(self):
         self.clear()
