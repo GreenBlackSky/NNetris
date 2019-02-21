@@ -13,8 +13,12 @@ class GameScene(Scene):
 
     def __init__(self, rect, fps, cell_size, parent):
         """Initialize scene with given arguments."""
-        super().__init__(rect, fps, cell_size, parent)
+        super().__init__(rect, parent)
+        self.speed = 40//fps
+        self.update_count = 0
+        self.stored_events = list()
         _, _, w, h = self.rect
+        self.cell_size = cell_size
         self.game = Tetris(w//cell_size, h//cell_size)
         self.triggers = {
             **self.triggers,
@@ -25,24 +29,27 @@ class GameScene(Scene):
         }
 
     def move_right(self):
-        """Move current falling figure one step right."""
         self.game.mind.set_descision(Move.MoveRight)
 
     def move_left(self):
-        """Move current falling figure one step left."""
         self.game.mind.set_descision(Move.MoveLeft)
 
     def rotate_right(self):
-        """Rotate current falling figure left one turn."""
         self.game.mind.set_descision(Move.RotateRight)
 
     def rotate_left(self):
-        """Rotate current falling figure left one turn."""
         self.game.mind.set_descision(Move.RotateLeft)
 
     def update(self, events):
         """Update scene, pass it events."""
-        super().update(events)
+        self.update_count = (self.update_count + 1) % self.speed
+        if self.update_count != 0:
+            self.stored_events += events
+            return
+
+        super().update(self.stored_events)
+        self.stored_events.clear()
+
         self.game.update()
         if self.game.field_is_filled():
             self.emmit_event(Event.Type.Quit)
@@ -52,8 +59,15 @@ class GameScene(Scene):
         self.clear()
         fig_x, fig_y = self.game.current_figure.x, self.game.current_figure.y
         for x, y in self.game.current_figure:
-            self.draw_cell((fig_x + x, fig_y + y), Color.WHITE)
+            self.__draw_cell(fig_x + x, fig_y + y, Color.WHITE)
         for y, line in enumerate(self.game.field):
             for x, val in enumerate(line):
                 if val:
-                    self.draw_cell((x, y), Color.WHITE)
+                    self.__draw_cell(x, y, Color.WHITE)
+
+    def __draw_cell(self, x, y, color):
+        rect = (x*self.cell_size,
+                y*self.cell_size,
+                self.cell_size,
+                self.cell_size)
+        self.draw_rect(rect, Color.WHITE)

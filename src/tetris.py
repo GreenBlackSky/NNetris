@@ -1,6 +1,6 @@
 """Module contains all of game logic."""
 
-from random import randint
+from random import randint, choice
 from enum import Enum, auto
 from copy import deepcopy
 from typing import List
@@ -14,7 +14,6 @@ class Figure:
     class Type(Enum):
         """Type of figure."""
 
-        Block = auto()
         Square = auto()
         LeftHook = auto()
         RightHook = auto()
@@ -24,7 +23,6 @@ class Figure:
         Line = auto()
 
     sizes = {
-        Type.Block: 1,
         Type.Square: 2,
         Type.LeftHook: 3,
         Type.RightHook: 3,
@@ -35,7 +33,6 @@ class Figure:
     }
 
     configurations = {
-        Type.Block: {(0, 0)},
         Type.Square: {(0, 0), (0, 1), (1, 0), (1, 1)},
         Type.LeftHook: {(0, 0), (1, 0), (1, 1), (1, 2)},
         Type.RightHook: {(1, 0), (2, 0), (1, 1), (1, 2)},
@@ -79,37 +76,38 @@ class Tetris:
         self.mind = Controller()
         self.field = [[False]*self.w for _ in range(self.h)]
         self.current_figure = None
-        self.new_figure()
+        self.__new_figure()
 
     def update(self):
         """Update the situation in the game.
 
         All the basics of game logic implemented here.
         """
-        if self.figure_at_bottom():
-            self.incorporate_figure()
-            self.new_figure()
-        self.make_move()
-        filled_lines = self.check_filled_lines()
-        self.remove_lines(filled_lines)
-        self.drop_lines(filled_lines)
+        if not self.__clear_below():
+            self.__incorporate_figure()
+            self.__new_figure()
+        self.__make_move()
+        filled_lines = self.__check_filled_lines()
+        self.__remove_lines(filled_lines)
+        self.__drop_lines(filled_lines)
 
-    def new_figure(self):
-        """Create new falling figure."""
-        # figure_type = choice(list(Tetris.Figure))
-        figure_type = Figure.Type.Block
+    def field_is_filled(self):
+        """Check if game is over."""
+        return any(self.field[0])
+
+    def __new_figure(self):
+        figure_type = choice(list(Figure.Type))
         figure_pos = (randint(0, self.w - Figure.sizes[figure_type]), 0)
         figure_rotation = randint(0, 3)
         self.current_figure = Figure(figure_type, *figure_pos)
         for _ in range(figure_rotation):
             self.current_figure.rotate_left()
 
-    def make_move(self):
-        """Move falling figure due to controllers state."""
+    def __make_move(self):
         descision = self.mind.get_descision()
         x, y = self.current_figure.x, self.current_figure.y
 
-        if y < self.h - 1 and not self.field[y + 1][x]:
+        if self.__clear_below():
             self.current_figure.y += 1
             y += 1
 
@@ -119,14 +117,10 @@ class Tetris:
         elif descision == Move.RotateRight:
             self.current_figure.rotate_right()
 
-        elif descision == Move.MoveLeft \
-            and x > 0 \
-                and not self.field[y][x - 1]:
+        elif descision == Move.MoveLeft and self.__clear_to_left():
             self.current_figure.x -= 1
 
-        elif descision == Move.MoveRight \
-            and x + self.current_figure.size < self.w \
-                and not self.field[y][x + self.current_figure.size]:
+        elif descision == Move.MoveRight and self.__clear_to_right():
             self.current_figure.x += 1
 
         elif descision == Move.Drop:
@@ -134,47 +128,51 @@ class Tetris:
         elif descision == Move.DoNothing:
             pass
 
-    def figure_at_bottom(self) -> bool:
-        """Check if figure touches bottom or another block."""
+    def __clear_below(self) -> bool:
         for fig_x, fig_y in self.current_figure:
             x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
             if y == self.h - 1 or self.field[y + 1][x]:
-                return True
-        return False
+                return False
+        return True
 
-    def incorporate_figure(self):
-        """Make falling figure part of a games landscape."""
+    def __clear_to_left(self) -> bool:
+        for fig_x, fig_y in self.current_figure:
+            x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
+            if x == 0 or self.field[y][x - 1]:
+                return False
+        return True
+
+    def __clear_to_right(self) -> bool:
+        for fig_x, fig_y in self.current_figure:
+            x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
+            if x == self.w - 1 or self.field[y][x + 1]:
+                return False
+        return True
+
+    def __incorporate_figure(self):
         for fig_x, fig_y in self.current_figure:
             x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
             self.field[y][x] = True
 
-    def check_filled_lines(self) -> List[int]:
-        """Check if there are full lines."""
+    def __check_filled_lines(self) -> List[int]:
         filled_lines = list()
         for y, line in enumerate(self.field):
             if all(line):
                 filled_lines.append(y)
         return filled_lines
 
-    def remove_lines(self, filled_lines: List[int]):
-        """Remove lines in given coordinates from games landscape."""
+    def __remove_lines(self, filled_lines: List[int]):
         for y in filled_lines:
             line = self.field[y]
             for x in range(len(line)):
                 line[x] = False
 
-    def drop_lines(self, deleted_lines: List[int]):
-        """Push down blocks after deleting a lines under them."""
+    def __drop_lines(self, deleted_lines: List[int]):
         deleted_lines.sort(reverse=True)
         for deleted in deleted_lines:
-            self.drop_one_line(deleted)
+            self.__drop_one_line(deleted)
 
-    def drop_one_line(self, deleted: int):
-        """Push down blocks above line with given coordinate."""
+    def __drop_one_line(self, deleted: int):
         for x in range(self.w):
             for y in range(deleted, 1, -1):
                 self.field[y][x] = self.field[y - 1][x]
-
-    def field_is_filled(self):
-        """Check if game is over."""
-        return any(self.field[0])
