@@ -11,21 +11,19 @@ from controller import Move
 class GameScene(Scene):
     """Tetris scene."""
 
-    def __init__(self, rect, fps, cell_size, parent):
+    def __init__(self, rect, cell_size, speed, parent):
         """Initialize scene with given arguments."""
         super().__init__(rect, parent)
-        self.speed = 40//fps
-        self.update_count = 0
-        self.stored_events = list()
         _, _, w, h = self.rect
         self.cell_size = cell_size
-        self.game = Tetris(w//cell_size, h//cell_size)
+        self.game = Tetris(speed, w//cell_size, h//cell_size)
         self.triggers = {
             **self.triggers,
             "move_right": self.move_right,
             "move_left": self.move_left,
             "rotate_right": self.rotate_right,
-            "rotate_left": self.rotate_left
+            "rotate_left": self.rotate_left,
+            "drop": self.drop
         }
 
     def move_right(self):
@@ -40,16 +38,12 @@ class GameScene(Scene):
     def rotate_left(self):
         self.game.mind.set_descision(Move.RotateLeft)
 
+    def drop(self):
+        self.game.mind.set_descision(Move.Drop)
+
     def update(self, events):
         """Update scene, pass it events."""
-        self.update_count = (self.update_count + 1) % self.speed
-        if self.update_count != 0:
-            self.stored_events += events
-            return
-
-        super().update(self.stored_events)
-        self.stored_events.clear()
-
+        super().update(events)
         self.game.update()
         if self.game.field_is_filled():
             self.emmit_event(Event.Type.Quit)
@@ -71,3 +65,5 @@ class GameScene(Scene):
                 self.cell_size,
                 self.cell_size)
         self.draw_rect(rect, Color.WHITE)
+
+# TODO Implement reaction on long pressing the buttons

@@ -7,18 +7,25 @@ from MWidgets import Event
 from gamescene import GameScene
 
 
+def play_tetris():
+    """All game logic here."""
+    cell_size = 20
+    speed = 20
+    w, h = 10, 20
+    win = Window((0, 0, w*cell_size, h*cell_size), layout_name="game")
+
+    scn = GameScene((0, 0, 1, 1), cell_size, speed, win)
+    scn.set_trigger(Event.Key.K_LEFT, win, "move_left")
+    scn.set_trigger(Event.Key.K_RIGHT, win, "move_right")
+    scn.set_trigger(Event.Key.K_UP, win, "rotate_left")
+    scn.set_trigger(Event.Key.K_DOWN, win, "drop")
+    win.add_child("game", scn)
+
+    gui = PygameGUI(w*cell_size, h*cell_size)
+    win.set_gui(gui)
+
+    win.exec()
+
+
 if __name__ == "__main__":
-    CELL_SIZE = 20
-    W, H = 10, 20
-    WIN = Window((0, 0, W*CELL_SIZE, H*CELL_SIZE), layout_name="game")
-
-    SCN = GameScene((0, 0, 1, 1), fps=5, cell_size=CELL_SIZE, parent=WIN)
-    SCN.set_trigger(Event.Key.K_LEFT, WIN, "move_left")
-    SCN.set_trigger(Event.Key.K_RIGHT, WIN, "move_right")
-    SCN.set_trigger(Event.Key.K_UP, WIN, "rotate_left")
-    WIN.add_child("game", SCN)
-
-    GUI = PygameGUI(W*CELL_SIZE, H*CELL_SIZE)
-    WIN.set_gui(GUI)
-
-    WIN.exec()
+    play_tetris()

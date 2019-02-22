@@ -3,7 +3,6 @@
 from random import randint, choice
 from enum import Enum, auto
 from copy import deepcopy
-from typing import List
 
 from controller import Controller, Move
 
@@ -70,13 +69,17 @@ class Figure:
 class Tetris:
     """Tetris game logic."""
 
-    def __init__(self, w, h):
+    def __init__(self, speed, w, h):
         """Create game of tetris with field of given size."""
         self.w, self.h = w, h
         self.mind = Controller()
         self.field = [[False]*self.w for _ in range(self.h)]
         self.current_figure = None
         self.__new_figure()
+
+        self.normal_speed = speed
+        self.speed = self.normal_speed
+        self.step_count = 0
 
     def update(self):
         """Update the situation in the game.
@@ -107,9 +110,11 @@ class Tetris:
         descision = self.mind.get_descision()
         x, y = self.current_figure.x, self.current_figure.y
 
-        if self.__clear_below():
+        self.step_count = (self.step_count + 1) % self.speed
+        if self.__clear_below() and self.step_count == 0:
             self.current_figure.y += 1
             y += 1
+        self.speed = self.normal_speed
 
         if descision == Move.RotateLeft:
             self.current_figure.rotate_left()
@@ -124,25 +129,26 @@ class Tetris:
             self.current_figure.x += 1
 
         elif descision == Move.Drop:
-            pass
+            self.speed = 2
+
         elif descision == Move.DoNothing:
             pass
 
-    def __clear_below(self) -> bool:
+    def __clear_below(self):
         for fig_x, fig_y in self.current_figure:
             x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
             if y == self.h - 1 or self.field[y + 1][x]:
                 return False
         return True
 
-    def __clear_to_left(self) -> bool:
+    def __clear_to_left(self):
         for fig_x, fig_y in self.current_figure:
             x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
             if x == 0 or self.field[y][x - 1]:
                 return False
         return True
 
-    def __clear_to_right(self) -> bool:
+    def __clear_to_right(self):
         for fig_x, fig_y in self.current_figure:
             x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
             if x == self.w - 1 or self.field[y][x + 1]:
@@ -154,25 +160,30 @@ class Tetris:
             x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
             self.field[y][x] = True
 
-    def __check_filled_lines(self) -> List[int]:
+    def __check_filled_lines(self):
         filled_lines = list()
         for y, line in enumerate(self.field):
             if all(line):
                 filled_lines.append(y)
         return filled_lines
 
-    def __remove_lines(self, filled_lines: List[int]):
+    def __remove_lines(self, filled_lines):
         for y in filled_lines:
             line = self.field[y]
             for x in range(len(line)):
                 line[x] = False
 
-    def __drop_lines(self, deleted_lines: List[int]):
+    def __drop_lines(self, deleted_lines):
         deleted_lines.sort(reverse=True)
         for deleted in deleted_lines:
             self.__drop_one_line(deleted)
 
-    def __drop_one_line(self, deleted: int):
+    def __drop_one_line(self, deleted):
         for x in range(self.w):
             for y in range(deleted, 1, -1):
                 self.field[y][x] = self.field[y - 1][x]
+
+# TODO Rotation near the edge can crash the game
+# TODO Give player some time before incorporating figure
+# TODO Sometimes lines don't fall all the way down
+# TODO Figure slowers down near the bottom
