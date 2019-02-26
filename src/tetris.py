@@ -86,13 +86,15 @@ class Tetris:
 
         All the basics of game logic implemented here.
         """
-        if not self.__clear_below():
-            self.__incorporate_figure()
-            self.__new_figure()
+        self.step_count = (self.step_count + 1) % self.speed
+        if self.step_count == 0:
+            self.__pull_down()
+            filled_lines = self.__check_filled_lines()
+            if filled_lines:
+                self.__remove_lines(filled_lines)
+                self.__drop_lines(filled_lines)
+
         self.__make_move()
-        filled_lines = self.__check_filled_lines()
-        self.__remove_lines(filled_lines)
-        self.__drop_lines(filled_lines)
 
     def field_is_filled(self):
         """Check if game is over."""
@@ -106,14 +108,17 @@ class Tetris:
         for _ in range(figure_rotation):
             self.current_figure.rotate_left()
 
+    def __pull_down(self):
+        if self.__clear_below():
+            self.current_figure.y += 1
+        else:
+            self.__incorporate_figure()
+            self.__new_figure()
+
     def __make_move(self):
         descision = self.mind.get_descision()
         x, y = self.current_figure.x, self.current_figure.y
 
-        self.step_count = (self.step_count + 1) % self.speed
-        if self.__clear_below() and self.step_count == 0:
-            self.current_figure.y += 1
-            y += 1
         self.speed = self.normal_speed
 
         if descision == Move.RotateLeft:
@@ -169,21 +174,18 @@ class Tetris:
 
     def __remove_lines(self, filled_lines):
         for y in filled_lines:
-            line = self.field[y]
-            for x in range(len(line)):
-                line[x] = False
+            self.field[y] = [False]*self.w
 
     def __drop_lines(self, deleted_lines):
-        deleted_lines.sort(reverse=True)
-        for deleted in deleted_lines:
-            self.__drop_one_line(deleted)
-
-    def __drop_one_line(self, deleted):
-        for x in range(self.w):
-            for y in range(deleted, 1, -1):
-                self.field[y][x] = self.field[y - 1][x]
+        top = min(deleted_lines)
+        bottom = max(deleted_lines)
+        fall = bottom - top + 1
+        for y in range(top - 1, -1, -1):
+            self.field[y + fall], self.field[y] = \
+                self.field[y], self.field[y + fall]
+            if not any(self.field[y + fall]):
+                break
 
 # TODO Rotation near the edge can crash the game
-# TODO Give player some time before incorporating figure
 # TODO Sometimes lines don't fall all the way down
 # TODO Figure slowers down near the bottom
