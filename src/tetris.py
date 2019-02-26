@@ -187,5 +187,4 @@ class Tetris:
                 break
 
 # TODO Rotation near the edge can crash the game
-# TODO Sometimes lines don't fall all the way down
 # TODO Figure slowers down near the bottom
