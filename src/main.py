@@ -20,7 +20,7 @@ def play_tetris():
     scn.set_trigger(KeyPressedEvent, win, "move_right", KeyEvent.Key.K_RIGHT)
     scn.set_trigger(KeyPressedEvent, win, "rotate_left", KeyEvent.Key.K_UP)
     scn.set_trigger(KeyPressedEvent, win, "drop", KeyEvent.Key.K_DOWN)
-    win.set_widget(scn)
+    win.add_widget(scn)
 
     for s in dir(win):
         print(s)
