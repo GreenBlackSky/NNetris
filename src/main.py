@@ -2,7 +2,7 @@
 
 from MWidgets import Window
 from MWidgets import PygameGUI
-from MWidgets import Event
+from MWidgets import KeyEvent, KeyPressedEvent
 
 from gamescene import GameScene
 
@@ -16,11 +16,14 @@ def play_tetris():
     win = Window(gui)
 
     scn = GameScene((0, 0, 1, 1), cell_size, speed, win)
-    scn.set_trigger(Event.Key.K_LEFT, win, "move_left")
-    scn.set_trigger(Event.Key.K_RIGHT, win, "move_right")
-    scn.set_trigger(Event.Key.K_UP, win, "rotate_left")
-    scn.set_trigger(Event.Key.K_DOWN, win, "drop")
+    scn.set_trigger(KeyPressedEvent, win, "move_left", KeyEvent.Key.K_LEFT)
+    scn.set_trigger(KeyPressedEvent, win, "move_right", KeyEvent.Key.K_RIGHT)
+    scn.set_trigger(KeyPressedEvent, win, "rotate_left", KeyEvent.Key.K_UP)
+    scn.set_trigger(KeyPressedEvent, win, "drop", KeyEvent.Key.K_DOWN)
     win.set_widget(scn)
+
+    for s in dir(win):
+        print(s)
 
     win.exec()
 
