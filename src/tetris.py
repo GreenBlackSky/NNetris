@@ -86,19 +86,50 @@ class Tetris:
 
         All the basics of game logic implemented here.
         """
+        clear_below, clear_to_right, clear_to_left = self.__get_borders()
+
         self.step_count = (self.step_count + 1) % self.speed
         if self.step_count == 0:
-            self.__pull_down()
+            self.__pull_down(clear_below)
             filled_lines = self.__check_filled_lines()
             if filled_lines:
                 self.__remove_lines(filled_lines)
                 self.__drop_lines(filled_lines)
 
-        self.__make_move()
+        self.__make_move(clear_to_right, clear_to_left)
 
     def field_is_filled(self):
         """Check if game is over."""
         return any(self.field[0])
+
+    def __get_borders(self):
+        clear_below = True
+        clear_to_right = True
+        clear_to_left = True
+        for x, y in self.__figure_blocks():
+            if y == self.h - 1 or self.field[y + 1][x]:
+                clear_below = False
+            if x == 0 or self.field[y][x - 1]:
+                clear_to_left = False
+            if x == self.w - 1 or self.field[y][x + 1]:
+                clear_to_right = False
+        return clear_below, clear_to_right, clear_to_left
+
+    def __figure_blocks(self):
+        for fig_x, fig_y in self.current_figure:
+            x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
+            yield x, y
+
+    def __pull_down(self, clear_below):
+        if clear_below:
+            self.current_figure.y += 1
+        else:
+            self.__incorporate_figure()
+            self.__new_figure()
+
+    def __incorporate_figure(self):
+        for x, y in self.__figure_blocks():
+            self.field[y][x] = True
 
     def __new_figure(self):
         figure_type = choice(list(Figure.Type))
@@ -107,63 +138,6 @@ class Tetris:
         self.current_figure = Figure(figure_type, *figure_pos)
         for _ in range(figure_rotation):
             self.current_figure.rotate_left()
-
-    def __pull_down(self):
-        if self.__clear_below():
-            self.current_figure.y += 1
-        else:
-            self.__incorporate_figure()
-            self.__new_figure()
-
-    def __make_move(self):
-        descision = self.mind.get_descision()
-        x, y = self.current_figure.x, self.current_figure.y
-
-        self.speed = self.normal_speed
-
-        if descision == Move.RotateLeft:
-            self.current_figure.rotate_left()
-
-        elif descision == Move.RotateRight:
-            self.current_figure.rotate_right()
-
-        elif descision == Move.MoveLeft and self.__clear_to_left():
-            self.current_figure.x -= 1
-
-        elif descision == Move.MoveRight and self.__clear_to_right():
-            self.current_figure.x += 1
-
-        elif descision == Move.Drop:
-            self.speed = 2
-
-        elif descision == Move.DoNothing:
-            pass
-
-    def __clear_below(self):
-        for fig_x, fig_y in self.current_figure:
-            x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
-            if y == self.h - 1 or self.field[y + 1][x]:
-                return False
-        return True
-
-    def __clear_to_left(self):
-        for fig_x, fig_y in self.current_figure:
-            x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
-            if x == 0 or self.field[y][x - 1]:
-                return False
-        return True
-
-    def __clear_to_right(self):
-        for fig_x, fig_y in self.current_figure:
-            x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
-            if x == self.w - 1 or self.field[y][x + 1]:
-                return False
-        return True
-
-    def __incorporate_figure(self):
-        for fig_x, fig_y in self.current_figure:
-            x, y = self.current_figure.x + fig_x, self.current_figure.y + fig_y
-            self.field[y][x] = True
 
     def __check_filled_lines(self):
         filled_lines = list()
@@ -185,6 +159,30 @@ class Tetris:
                 self.field[y], self.field[y + fall]
             if not any(self.field[y + fall]):
                 break
+
+    def __make_move(self, clear_to_right, clear_to_left):
+        descision = self.mind.get_descision()
+        x, y = self.current_figure.x, self.current_figure.y
+
+        self.speed = self.normal_speed
+
+        if descision == Move.RotateLeft:
+            self.current_figure.rotate_left()
+
+        elif descision == Move.RotateRight:
+            self.current_figure.rotate_right()
+
+        elif descision == Move.MoveLeft and clear_to_left:
+            self.current_figure.x -= 1
+
+        elif descision == Move.MoveRight and clear_to_right:
+            self.current_figure.x += 1
+
+        elif descision == Move.Drop:
+            self.speed = 2
+
+        elif descision == Move.DoNothing:
+            pass
 
 # TODO Rotation near the edge can crash the game
 # TODO Figure slowers down near the bottom

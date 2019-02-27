@@ -22,9 +22,6 @@ def play_tetris():
     scn.set_trigger(KeyPressedEvent, win, "drop", KeyEvent.Key.K_DOWN)
     win.add_widget(scn)
 
-    for s in dir(win):
-        print(s)
-
     win.exec()
 
 
