@@ -10,7 +10,7 @@ from gamescene import GameScene
 def play_tetris():
     """All game logic here."""
     cell_size = 20
-    speed = 20
+    speed = 10
     w, h = 10, 15
     gui = PygameGUI(w*cell_size, h*cell_size)
     win = Window(gui)
