@@ -1,8 +1,6 @@
 """Entry point for tetris game."""
 
-from MWidgets import Window
-from MWidgets import PygameGUI
-from MWidgets import KeyEvent, KeyPressedEvent
+from mwidgets import Window, PygameGUI, KeyEvent, KeyPressedEvent
 
 from gamescene import GameScene
 

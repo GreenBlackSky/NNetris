@@ -1,8 +1,6 @@
 """Tetris scene."""
 
-from MWidgets import Scene
-from MWidgets import Event
-from MWidgets import Color
+from mwidgets import Scene, Color
 
 from tetris import Tetris
 from controller import Move
