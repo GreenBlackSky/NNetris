@@ -140,8 +140,6 @@ class Tetris:
         for y in range(top - 1, -1, -1):
             self.field[y + fall], self.field[y] = \
                 self.field[y], self.field[y + fall]
-            if not any(self.field[y + fall]):
-                break
 
     def __make_move(self, clear_to_right, clear_to_left):
         descision = self.mind.get_descision()
