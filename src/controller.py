@@ -19,14 +19,16 @@ class Controller:
 
     def __init__(self):
         """Inittalize Controller with Move.DoNothing."""
-        self.descision = Move.DoNothing
+        self._descision = Move.DoNothing
 
-    def set_descision(self, descision: Move):
-        """Set controllers current descision."""
-        self.descision = descision
-
-    def get_descision(self):
+    @property
+    def descision(self):
         """Return controllers current descision and sets it to DoNothing."""
-        ret = self.descision
-        self.descision = Move.DoNothing
+        ret = self._descision
+        self._descision = Move.DoNothing
         return ret
+
+    @descision.setter
+    def descision(self, descision):
+        """Set controllers current descision."""
+        self._descision = descision

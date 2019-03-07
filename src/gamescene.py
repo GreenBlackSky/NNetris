@@ -13,10 +13,10 @@ class GameScene(Scene):
         """Initialize scene with given arguments."""
         super().__init__(rect, parent)
         _, _, w, h = self.rect
-        self.cell_size = cell_size
-        self.game = Tetris(speed, w//cell_size, h//cell_size)
-        self.triggers = {
-            **self.triggers,
+        self._cell_size = cell_size
+        self._game = Tetris(speed, w//cell_size, h//cell_size)
+        self._triggers = {
+            **self._triggers,
             "move_right": self.move_right,
             "move_left": self.move_left,
             "rotate_right": self.rotate_right,
@@ -25,43 +25,43 @@ class GameScene(Scene):
         }
 
     def move_right(self):
-        self.game.mind.set_descision(Move.MoveRight)
+        self._game.mind.descision = Move.MoveRight
 
     def move_left(self):
-        self.game.mind.set_descision(Move.MoveLeft)
+        self._game.mind.descision = Move.MoveLeft
 
     def rotate_right(self):
-        self.game.mind.set_descision(Move.RotateRight)
+        self._game.mind.descision = Move.RotateRight
 
     def rotate_left(self):
-        self.game.mind.set_descision(Move.RotateLeft)
+        self._game.mind.descision = Move.RotateLeft
 
     def drop(self):
-        self.game.mind.set_descision(Move.Drop)
+        self._game.mind.descision = Move.Drop
 
     def update(self, events):
         """Update scene, pass it events."""
         super().update(events)
-        self.game.update()
-        if self.game.field_is_filled():
-            self.emmit_event(Event.Type.Quit)
+        self._game.update()
+        if self._game.field_is_filled():
+            self.emmit_event(Event.Type.Quit())
 
     def redraw(self):
         """Update visual look of scene."""
         self.clear()
-        fig_x, fig_y = self.game.current_figure.x, self.game.current_figure.y
-        for x, y in self.game.current_figure:
-            self.__draw_cell(fig_x + x, fig_y + y, Color.WHITE)
-        for y, line in enumerate(self.game.field):
+        fig_x, fig_y = self._game.current_figure.x, self._game.current_figure.y
+        for x, y in self._game.current_figure:
+            self._draw_cell(fig_x + x, fig_y + y, Color.WHITE)
+        for y, line in enumerate(self._game.field):
             for x, val in enumerate(line):
                 if val:
-                    self.__draw_cell(x, y, Color.WHITE)
+                    self._draw_cell(x, y, Color.WHITE)
 
-    def __draw_cell(self, x, y, color):
-        rect = (x*self.cell_size,
-                y*self.cell_size,
-                self.cell_size,
-                self.cell_size)
+    def _draw_cell(self, x, y, color):
+        rect = (x*self._cell_size,
+                y*self._cell_size,
+                self._cell_size,
+                self._cell_size)
         self.draw_rect(rect, Color.WHITE)
 
 # TODO Implement reaction on long pressing the buttons
