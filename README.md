@@ -1,1 +1,3 @@
-## Tetris game written in python with help of MWidgets.
+# Tetris game
+
+Basic Tetris game with use of tkinter.
