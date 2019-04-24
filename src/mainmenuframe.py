@@ -15,11 +15,13 @@ class MainMenuFrame(Frame):
             text="New game",
             command=self.master.game
         ).grid(column=0, row=0, sticky="nsew")
+
         Button(
             self,
             text="Options",
             command=self.master.options
         ).grid(column=0, row=1, sticky="nsew")
+
         Button(
             self,
             text="Quit",

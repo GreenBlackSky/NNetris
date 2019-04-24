@@ -1,7 +1,7 @@
 """OptionsFrame class."""
 
-from tkinter import Frame, Canvas, Label, Listbox, IntVar, Radiobutton, Button
-from tkinter import LEFT, BOTH
+from tkinter import Frame, Canvas, Label, Listbox, Button, Scale
+from tkinter import LEFT, BOTH, HORIZONTAL, X
 
 
 class OptionsFrame(Frame):
@@ -17,28 +17,10 @@ class OptionsFrame(Frame):
         Listbox(self).pack(fill=BOTH, expand=True)
 
         Label(self, text='Cell size:').pack()
-        cell_size = IntVar()
-        cell_size_frame = Frame(self)
-        for i in range(5):
-            Radiobutton(
-                cell_size_frame,
-                variable=cell_size,
-                value=i
-            ).pack(side=LEFT)
-        cell_size_frame.pack()
-        cell_size.set(0)
+        Scale(self, to=5, orient=HORIZONTAL).pack(fill=X, expand=True)
 
         Label(self, text='Speed:').pack()
-        speed = IntVar()
-        speed_frame = Frame(self)
-        for i in range(10):
-            Radiobutton(
-                speed_frame,
-                variable=speed,
-                value=i
-            ).pack(side=LEFT)
-        speed_frame.pack()
-        speed.set(0)
+        Scale(self, to=10, orient=HORIZONTAL).pack(fill=X, expand=True)
 
         Button(self, text="Drop record table").pack()
 
