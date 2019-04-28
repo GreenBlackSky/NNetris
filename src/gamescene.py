@@ -1,67 +1,39 @@
 """Tetris scene."""
 
-from mwidgets import Scene, Color
+
+from tkinter import Canvas
+from time import sleep
 
 from tetris import Tetris
 from controller import Move
 
 
-class GameScene(Scene):
-    """Tetris scene."""
+class GameScene(Canvas):
+    def __init__(self, master, **kargs):
+        super().__init__(master, **kargs)
+        self.config(background='white')
+        self._game = Tetris(1, 10, 20)
+        self.update()
 
-    def __init__(self, rect, cell_size, speed, parent):
-        """Initialize scene with given arguments."""
-        super().__init__(rect, parent)
-        _, _, w, h = self.rect
-        self._cell_size = cell_size
-        self._game = Tetris(speed, w//cell_size, h//cell_size)
-        self._triggers = {
-            **self._triggers,
-            "move_right": self.move_right,
-            "move_left": self.move_left,
-            "rotate_right": self.rotate_right,
-            "rotate_left": self.rotate_left,
-            "drop": self.drop
-        }
-
-    def move_right(self):
-        self._game.mind.descision = Move.MoveRight
-
-    def move_left(self):
-        self._game.mind.descision = Move.MoveLeft
-
-    def rotate_right(self):
-        self._game.mind.descision = Move.RotateRight
-
-    def rotate_left(self):
-        self._game.mind.descision = Move.RotateLeft
-
-    def drop(self):
-        self._game.mind.descision = Move.Drop
-
-    def update(self, events):
-        """Update scene, pass it events."""
-        super().update(events)
+    def update(self):
         self._game.update()
-        if self._game.field_is_filled():
-            self.emmit_event(Event.Type.Quit())
-
-    def redraw(self):
-        """Update visual look of scene."""
-        self.clear()
+        self.delete('all')
         fig_x, fig_y = self._game.current_figure.x, self._game.current_figure.y
         for x, y in self._game.current_figure:
-            self._draw_cell(fig_x + x, fig_y + y, Color.WHITE)
+            self._draw_rect(fig_x + x, fig_y + y)
         for y, line in enumerate(self._game.field):
             for x, val in enumerate(line):
                 if val:
-                    self._draw_cell(x, y, Color.WHITE)
+                    self._draw_rect(x, y)
+        self.after(100, self.update)
 
-    def _draw_cell(self, x, y, color):
-        rect = (x*self._cell_size,
-                y*self._cell_size,
-                self._cell_size,
-                self._cell_size)
-        self.draw_rect(rect, Color.WHITE)
+    def _draw_rect(self, x, y):
+        cell_size = 10
+        args = [arg*cell_size for arg in [x, y, x + 1, y + 1]]
+        self.create_rectangle(*args, fill='green')
 
-# TODO Implement reaction on long pressing the buttons
+# Speed
+# Cell size
+# Field size
+# Colors
+# Keys

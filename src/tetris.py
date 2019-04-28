@@ -84,16 +84,6 @@ class Figure:
         """Set y coordinate of figure top left corner."""
         self._y = value
 
-    @property
-    def w(self):
-        """Get width of figure."""
-        return self._w
-
-    @property
-    def h(self):
-        """Get height of figure."""
-        return self._h
-
 
 class Tetris:
     """Tetris game logic."""

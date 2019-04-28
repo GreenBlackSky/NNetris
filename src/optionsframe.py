@@ -1,7 +1,9 @@
 """OptionsFrame class."""
 
-from tkinter import Frame, Canvas, Label, Listbox, Button, Scale
-from tkinter import LEFT, BOTH, HORIZONTAL, X
+from tkinter import Frame, Label, Button, Scale, HORIZONTAL, X, Y
+from tkinter.ttk import Combobox
+
+from gamescene import GameScene
 
 
 class OptionsFrame(Frame):
@@ -11,17 +13,22 @@ class OptionsFrame(Frame):
         """Create OptionsFrame."""
         super().__init__(app)
 
-        Canvas(self).pack(fill=BOTH, expand=True)
+        GameScene(self).pack(fill=Y)
 
         Label(self, text='Appearance:').pack()
-        Listbox(self).pack(fill=BOTH, expand=True)
+        values = ["Light", "Dark", "Dracula", "Monokai"]
+        Combobox(self, values=values).pack(fill=X, expand=True)
 
         Label(self, text='Cell size:').pack()
-        Scale(self, to=5, orient=HORIZONTAL).pack(fill=X, expand=True)
+        Scale(self, from_=1, to=5, orient=HORIZONTAL).pack(fill=X, expand=True)
 
         Label(self, text='Speed:').pack()
-        Scale(self, to=10, orient=HORIZONTAL).pack(fill=X, expand=True)
+        Scale(
+            self,
+            from_=1, to=10,
+            orient=HORIZONTAL
+        ).pack(fill=X, expand=True)
 
         Button(self, text="Drop record table").pack()
 
-        Button(self, text="Back", command=self.master.main_menu).pack()
+        Button(self, text="Menu", command=self.master.main_menu).pack()
