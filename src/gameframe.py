@@ -11,15 +11,16 @@ class GameFrame(Frame):
         """Create GameFrame."""
         super().__init__(app)
 
-        Entry(self).grid(column=0, row=0, sticky="nsew")
-        Entry(self).grid(column=1, row=0, sticky="nsew")
-        Button(
-            self,
-            text="Menu",
-            command=self.master.main_menu
-        ).grid(column=1, row=0, sticky='e')
+        Entry(self).pack()
+        Entry(self).pack()
+        self._game_scene = GameScene(self)
+        self._game_scene.pack()
+        Button(self, text="Menu", command=self.master.main_menu).pack()
 
-        GameScene(self).grid(column=0, columnspan=2, row=1, sticky="nsew")
+    def pack(self, *args, **kargs):
+        self._game_scene.run = True
+        Frame.pack(self, *args, **kargs)
 
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
+    def pack_forget(self, *args, **kargs):
+        self._game_scene.run = False
+        Frame.pack_forget(self, *args, **kargs)

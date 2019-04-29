@@ -163,8 +163,6 @@ class Tetris:
 
     def _make_move(self, clear_to_right, clear_to_left):
         descision = self._mind.descision
-        x, y = self._current_figure.x, self._current_figure.y
-
         self._speed = self._normal_speed
 
         if descision == Move.RotateLeft:

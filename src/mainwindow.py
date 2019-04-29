@@ -9,11 +9,10 @@ from optionsframe import OptionsFrame
 class MainWindow(Tk):
     """MaonWindow contains all widgets in app."""
 
-    def __init__(self, title, size):
+    def __init__(self):
         """Create MainWindow."""
         super().__init__()
-        self.geometry(size)
-        self.title(title)
+        self.title("Netris")
 
         self._main_window_frame = MainMenuFrame(self)
         self._game_frame = GameFrame(self)

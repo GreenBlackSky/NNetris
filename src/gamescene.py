@@ -11,11 +11,26 @@ from controller import Move
 class GameScene(Canvas):
     def __init__(self, master, **kargs):
         super().__init__(master, **kargs)
-        self.config(background='white')
-        self._game = Tetris(1, 10, 20)
+        self._width = 10
+        self._height = 20
+        self._scale = 10
+        self._step = 100
+
+        self.config(
+            width=(self._width*self._scale),
+            height=(self._height*self._scale),
+            background='white'
+        )
+
+        self._game = Tetris(1, self._width, self._height)
+        self._run = False
         self.update()
 
     def update(self):
+        if not self._run:
+            self.after(self._step, self.update)
+            return
+
         self._game.update()
         self.delete('all')
         fig_x, fig_y = self._game.current_figure.x, self._game.current_figure.y
@@ -25,15 +40,29 @@ class GameScene(Canvas):
             for x, val in enumerate(line):
                 if val:
                     self._draw_rect(x, y)
-        self.after(100, self.update)
+        self.after(self._step, self.update)
 
     def _draw_rect(self, x, y):
-        cell_size = 10
-        args = [arg*cell_size for arg in [x, y, x + 1, y + 1]]
+        args = [arg*self._scale for arg in [x, y, x + 1, y + 1]]
         self.create_rectangle(*args, fill='green')
 
+    @property
+    def run(self):
+        return self._run
+
+    @run.setter
+    def run(self, value):
+        self._run = value
+
+    @property
+    def step(self):
+        return self._step
+
+    @step.setter
+    def step(self, value):
+        self._step = value
+
+
 # Speed
-# Cell size
-# Field size
-# Colors
 # Keys
+# Change colors instead of create/destroy

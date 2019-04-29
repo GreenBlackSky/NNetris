@@ -13,7 +13,8 @@ class OptionsFrame(Frame):
         """Create OptionsFrame."""
         super().__init__(app)
 
-        GameScene(self).pack(fill=Y)
+        self._game_scene = GameScene(self)
+        self._game_scene.pack(fill=Y)
 
         Label(self, text='Appearance:').pack()
         values = ["Light", "Dark", "Dracula", "Monokai"]
@@ -30,5 +31,12 @@ class OptionsFrame(Frame):
         ).pack(fill=X, expand=True)
 
         Button(self, text="Drop record table").pack()
-
         Button(self, text="Menu", command=self.master.main_menu).pack()
+
+    def pack(self, *args, **kargs):
+        self._game_scene.run = True
+        Frame.pack(self, *args, **kargs)
+
+    def pack_forget(self, *args, **kargs):
+        self._game_scene.run = False
+        Frame.pack_forget(self, *args, **kargs)
