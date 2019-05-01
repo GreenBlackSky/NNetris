@@ -4,8 +4,7 @@
 from tkinter import Canvas
 from time import sleep
 
-from tetris import Tetris
-from controller import Move
+from tetris import Tetris, Move
 
 
 class GameScene(Canvas):
@@ -32,6 +31,9 @@ class GameScene(Canvas):
                 )
 
         self._game = Tetris(1, self._width, self._height)
+        self.bind("<Key-Up>", lambda event: self._game.next_move(Move.RotateLeft))
+        self.bind("<Key-Left>", lambda event: self._game.next_move(Move.MoveLeft))
+        self.bind("<Key-Right>", lambda event: self._game.next_move(Move.MoveRight))
         self._run = False
         self.update()
 
@@ -85,6 +87,7 @@ class GameScene(Canvas):
     def step(self, value):
         self._step = value
 
-# Speed
-# Keys
-# Change colors instead of create/destroy
+# TODO fix focus
+# TODO refactor keys
+# TODO score
+# TODO rise speed

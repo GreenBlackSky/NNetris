@@ -3,8 +3,6 @@
 from random import randint, choice
 from enum import Enum, auto
 
-from controller import Controller, Move
-
 
 class Figure:
     """Falling figure."""
@@ -85,20 +83,33 @@ class Figure:
         self._y = value
 
 
+class Move(Enum):
+    """Accessible moves."""
+
+    DoNothing = auto()
+    RotateLeft = auto()
+    RotateRight = auto()
+    MoveLeft = auto()
+    MoveRight = auto()
+    Drop = auto()
+
+
 class Tetris:
     """Tetris game logic."""
 
     def __init__(self, speed, w, h):
         """Create game of tetris with field of given size."""
         self._w, self._h = w, h
-        self._mind = Controller()
         self._field = [[False]*self._w for _ in range(self._h)]
         self._current_figure = None
         self._new_figure()
-
+        self._last_move = Move.DoNothing
         self._normal_speed = speed
         self._speed = self._normal_speed
         self._step_count = 0
+
+    def next_move(self, move):
+        self._last_move = move
 
     def update(self):
         """Update the situation in the game.
@@ -113,6 +124,7 @@ class Tetris:
             self._drop_full_lines()
 
         self._make_move(clear_to_right, clear_to_left)
+        self._last_move = Move.DoNothing
 
     def field_is_filled(self):
         """Check if game is over."""
@@ -162,7 +174,7 @@ class Tetris:
                 self._field[y], self._field[y + fall]
 
     def _make_move(self, clear_to_right, clear_to_left):
-        descision = self._mind.descision
+        descision = self._last_move
         self._speed = self._normal_speed
 
         if descision == Move.RotateLeft:
@@ -219,10 +231,3 @@ class Tetris:
     def field(self):
         """Get game field."""
         return self._field
-
-    @property
-    def mind(self):
-        """Get game controller."""
-        return self._mind
-
-# TODO Figure slowers down near the bottom
