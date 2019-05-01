@@ -1,24 +1,24 @@
-"""GameFrame class."""
+"""AIFrame class."""
 
-from tkinter import Frame, Entry, Button
+from tkinter import Frame, Label, Button, Scale, HORIZONTAL, X
+from tkinter.ttk import Combobox
+
 from gamescene import GameScene
 
 
-class GameFrame(Frame):
-    """Frame contains game field to play on."""
+class AIFrame(Frame):
+    """Contains widgets to tune game."""
 
     def __init__(self, app):
-        """Create GameFrame."""
+        """Create AIFrame."""
         super().__init__(app)
-
-        Entry(self).grid(column=0, row=0)
         Button(
             self,
             text="Menu",
             command=self.master.main_menu
-        ).grid(column=1, row=0)
+        ).pack()
         self._game_scene = GameScene(self)
-        self._game_scene.grid(column=0, columnspan=2, row=1)
+        self._game_scene.pack()
 
     def pack(self, *args, **kargs):
         self._game_scene.run = True

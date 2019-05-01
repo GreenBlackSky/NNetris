@@ -3,7 +3,7 @@
 from tkinter import Tk, BOTH
 from mainmenuframe import MainMenuFrame
 from gameframe import GameFrame
-from optionsframe import OptionsFrame
+from aiframe import AIFrame
 
 
 class MainWindow(Tk):
@@ -16,7 +16,7 @@ class MainWindow(Tk):
 
         self._main_window_frame = MainMenuFrame(self)
         self._game_frame = GameFrame(self)
-        self._options_frame = OptionsFrame(self)
+        self._ai_frame = AIFrame(self)
 
         self.main_menu()
 
@@ -32,8 +32,8 @@ class MainWindow(Tk):
             widget.pack_forget()
         self._game_frame.pack(fill=BOTH, expand=True)
 
-    def options(self):
-        """Set OptionsFrame on top of app."""
+    def ai(self):
+        """Set AIFrame on top of app."""
         for widget in self.pack_slaves():
             widget.pack_forget()
-        self._options_frame.pack(fill=BOTH, expand=True)
+        self._ai_frame.pack(fill=BOTH, expand=True)

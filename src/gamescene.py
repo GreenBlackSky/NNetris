@@ -13,7 +13,7 @@ class GameScene(Canvas):
         super().__init__(master, **kargs)
         self._width = 10
         self._height = 20
-        self._scale = 10
+        self._scale = 30
         self._step = 100
 
         self.config(
@@ -32,7 +32,7 @@ class GameScene(Canvas):
             return
 
         self._game.update()
-        self.delete('all')
+        self.clear()
         fig_x, fig_y = self._game.current_figure.x, self._game.current_figure.y
         for x, y in self._game.current_figure:
             self._draw_rect(fig_x + x, fig_y + y)
@@ -41,6 +41,9 @@ class GameScene(Canvas):
                 if val:
                     self._draw_rect(x, y)
         self.after(self._step, self.update)
+
+    def clear(self):
+        self.delete('all')
 
     def _draw_rect(self, x, y):
         args = [arg*self._scale for arg in [x, y, x + 1, y + 1]]
@@ -61,7 +64,6 @@ class GameScene(Canvas):
     @step.setter
     def step(self, value):
         self._step = value
-
 
 # Speed
 # Keys

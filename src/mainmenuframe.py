@@ -1,6 +1,6 @@
 """MainMenuFrame class."""
 
-from tkinter import Frame, Button, Listbox
+from tkinter import Frame, Button, Listbox, BOTH
 
 
 class MainMenuFrame(Frame):
@@ -12,26 +12,18 @@ class MainMenuFrame(Frame):
 
         Button(
             self,
-            text="New game",
+            text="Play game",
             command=self.master.game
-        ).grid(column=0, row=0, sticky="nsew")
+        ).pack(fill=BOTH, expand=True)
 
         Button(
             self,
-            text="Options",
-            command=self.master.options
-        ).grid(column=0, row=1, sticky="nsew")
+            text="A.I.",
+            command=self.master.ai
+        ).pack(fill=BOTH, expand=True)
 
         Button(
             self,
             text="Quit",
             command=self.master.destroy
-        ).grid(column=0, row=2, sticky="nsew")
-
-        Listbox(self).grid(column=1, row=0, rowspan=3, sticky="nsew")
-
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
+        ).pack(fill=BOTH, expand=True)
