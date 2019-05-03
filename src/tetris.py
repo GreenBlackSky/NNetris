@@ -152,13 +152,15 @@ class Tetris:
         """
         clear_below, clear_to_right, clear_to_left = self._get_borders()
 
+        ret = 0
         self._step_count = (self._step_count + 1) % self._speed
         if self._step_count == 0:
             self._pull_figure_down(clear_below)
-            self._drop_full_lines()
+            ret = self._drop_full_lines()
 
         self._make_move(clear_to_right, clear_to_left)
         self._last_move = Tetris.Move.DoNothing
+        return ret*self._w
 
     def field_is_filled(self):
         """Check if game is over."""
@@ -199,7 +201,7 @@ class Tetris:
     def _drop_full_lines(self):
         full_lines = [y for y in range(self._h) if all(self._field[y])]
         if not full_lines:
-            return
+            return 0
 
         for y in full_lines:
             self._field[y] = [False]*self._w
@@ -209,6 +211,7 @@ class Tetris:
         for y in range(top - 1, -1, -1):
             self._field[y + fall], self._field[y] = \
                 self._field[y], self._field[y + fall]
+        return len(full_lines)
 
     def _make_move(self, clear_to_right, clear_to_left):
         descision = self._last_move

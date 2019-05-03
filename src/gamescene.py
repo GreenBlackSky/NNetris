@@ -8,7 +8,10 @@ from tetris import Tetris
 
 
 class GameScene(Canvas):
-    """Visual representation of game."""
+    """Visual representation of game.
+    
+    Needs GameFrame as master.
+    """
 
     def __init__(self, master, **kargs):
         """Create GameScene."""
@@ -17,6 +20,7 @@ class GameScene(Canvas):
         self._height = 20
         self._cell_size = 20
         self._step = 10
+        self._score = 0
 
         self.config(
             width=(self._width*self._cell_size),
@@ -49,7 +53,8 @@ class GameScene(Canvas):
             self.after(self._step, self.update)
             return
 
-        self._game.update()
+        self._score += self._game.update()
+        self.master.score = self._score
         self._clear()
         self._draw_figure()
         self._draw_filled_cells()
@@ -94,7 +99,8 @@ class GameScene(Canvas):
     def step(self, value):
         self._step = value
 
-# TODO score
+
+# TODO You-Loose-screen
 # TODO rise speed
 # TODO drop
 # TODO fix size
