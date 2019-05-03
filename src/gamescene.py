@@ -4,16 +4,19 @@
 from tkinter import Canvas
 from time import sleep
 
-from tetris import Tetris, Move
+from tetris import Tetris
 
 
 class GameScene(Canvas):
+    """Visual representation of game."""
+
     def __init__(self, master, **kargs):
+        """Create GameScene."""
         super().__init__(master, **kargs)
         self._width = 10
         self._height = 20
-        self._cell_size = 30
-        self._step = 100
+        self._cell_size = 20
+        self._step = 10
 
         self.config(
             width=(self._width*self._cell_size),
@@ -30,14 +33,18 @@ class GameScene(Canvas):
                     y*self._cell_size + self._cell_size
                 )
 
-        self._game = Tetris(1, self._width, self._height)
-        self.bind("<Key-Up>", lambda event: self._game.next_move(Move.RotateLeft))
-        self.bind("<Key-Left>", lambda event: self._game.next_move(Move.MoveLeft))
-        self.bind("<Key-Right>", lambda event: self._game.next_move(Move.MoveRight))
+        self._game = Tetris(20, self._width, self._height)
+        self.bind("<Key-Up>", lambda event: self._game.rotate_left())
+        self.bind("<Key-Left>", lambda event: self._game.move_left())
+        self.bind("<Key-Right>", lambda event: self._game.move_right())
         self._run = False
         self.update()
 
     def update(self):
+        """Update GameScene.
+
+        Schedules call of itself.
+        """
         if not self._run:
             self.after(self._step, self.update)
             return
@@ -87,7 +94,7 @@ class GameScene(Canvas):
     def step(self, value):
         self._step = value
 
-# TODO fix focus
-# TODO refactor keys
 # TODO score
 # TODO rise speed
+# TODO drop
+# TODO fix size
