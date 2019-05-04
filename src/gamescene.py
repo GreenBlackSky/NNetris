@@ -13,13 +13,13 @@ class GameScene(Canvas):
     Needs GameFrame as master.
     """
 
-    def __init__(self, master, **kargs):
+    def __init__(self, master, cell_size=20, step=5, **kargs):
         """Create GameScene."""
         super().__init__(master, **kargs)
         self._width = 10
         self._height = 20
-        self._cell_size = 20
-        self._step = 5
+        self._cell_size = cell_size
+        self._step = step
 
         self.config(
             width=(self._width*self._cell_size),
@@ -38,6 +38,7 @@ class GameScene(Canvas):
 
         self._game = Tetris(self._width, self._height)
         self.bind("<Key-Up>", lambda event: self._game.rotate_left())
+        self.bind("<Shift-Up>", lambda event: self._game.rotate_right())
         self.bind("<Key-Left>", lambda event: self._game.move_left())
         self.bind("<Key-Right>", lambda event: self._game.move_right())
         self._run = False
@@ -105,5 +106,6 @@ class GameScene(Canvas):
     def run(self, value):
         self._run = value
 
-# TODO drop
 # TODO fix size
+# TODO move bindings into controller
+# TODO move update scheduling into controller

@@ -299,4 +299,7 @@ class Tetris:
         """Get game score."""
         return self._score
 
+# TODO drop
+# TODO remake controller
+# TODO optimize a little
 # TODO if y == self._h - 1 or self._field[y + 1][x]: list index out of range
