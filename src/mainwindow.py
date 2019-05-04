@@ -1,9 +1,10 @@
 """MainWindow class."""
 
-from tkinter import Tk, BOTH
+from tkinter import Tk, BOTH, StringVar
 from mainmenuframe import MainMenuFrame
 from gameframe import GameFrame
 from aiframe import AIFrame
+from youlostframe import YouLostFrame
 
 
 class MainWindow(Tk):
@@ -12,11 +13,13 @@ class MainWindow(Tk):
     def __init__(self):
         """Create MainWindow."""
         super().__init__()
-        self.title("Netris")
+        score = StringVar()
 
+        self.title("Netris")
         self._main_window_frame = MainMenuFrame(self)
-        self._game_frame = GameFrame(self)
+        self._game_frame = GameFrame(self, score)
         self._ai_frame = AIFrame(self)
+        self._you_lost_frame = YouLostFrame(self, score)
 
         self.main_menu()
 
@@ -37,3 +40,9 @@ class MainWindow(Tk):
         for widget in self.pack_slaves():
             widget.pack_forget()
         self._ai_frame.pack(fill=BOTH, expand=True)
+
+    def you_lost(self):
+        """Set YouLostFrame on top of app."""
+        for widget in self.pack_slaves():
+            widget.pack_forget()
+        self._you_lost_frame.pack(fill=BOTH, expand=True)

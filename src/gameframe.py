@@ -1,17 +1,16 @@
 """GameFrame class."""
 
-from tkinter import Frame, Label, Button, StringVar
+from tkinter import Frame, Label, Button
 from gamescene import GameScene
 
 
 class GameFrame(Frame):
     """Frame contains game field to play on."""
 
-    def __init__(self, app):
+    def __init__(self, app, score):
         """Create GameFrame."""
         super().__init__(app)
-
-        self._score = StringVar()
+        self._score = score
         self._score.set('0')
         Label(self, text='Score:').grid(column=0, row=0)
         Label(self, textvar=self._score).grid(column=1, row=0)
@@ -40,5 +39,5 @@ class GameFrame(Frame):
         Frame.pack(self, *args, **kargs)
 
     def pack_forget(self, *args, **kargs):
-        self._game_scene.run = False
+        self._game_scene.restart_game()
         Frame.pack_forget(self, *args, **kargs)

@@ -9,7 +9,7 @@ from tetris import Tetris
 
 class GameScene(Canvas):
     """Visual representation of game.
-    
+
     Needs GameFrame as master.
     """
 
@@ -20,7 +20,6 @@ class GameScene(Canvas):
         self._height = 20
         self._cell_size = 20
         self._step = 10
-        self._score = 0
 
         self.config(
             width=(self._width*self._cell_size),
@@ -37,7 +36,7 @@ class GameScene(Canvas):
                     y*self._cell_size + self._cell_size
                 )
 
-        self._game = Tetris(20, self._width, self._height)
+        self._game = Tetris(10, self._width, self._height)
         self.bind("<Key-Up>", lambda event: self._game.rotate_left())
         self.bind("<Key-Left>", lambda event: self._game.move_left())
         self.bind("<Key-Right>", lambda event: self._game.move_right())
@@ -53,12 +52,26 @@ class GameScene(Canvas):
             self.after(self._step, self.update)
             return
 
-        self._score += self._game.update()
-        self.master.score = self._score
+        if self._game.game_is_lost:
+            self.after(self._step, self.update)
+            self.master.master.you_lost()
+            return
+
+        self._game.update()
+        self.master.score = self._game.score
         self._clear()
         self._draw_figure()
         self._draw_filled_cells()
+
         self.after(self._step, self.update)
+
+    def restart_game(self):
+        """Restart game.
+
+        New game is held on pause.
+        """
+        self._game.restart()
+        self._run = False
 
     def _clear(self):
         for item in self.find_all():
@@ -100,7 +113,6 @@ class GameScene(Canvas):
         self._step = value
 
 
-# TODO You-Loose-screen
 # TODO rise speed
 # TODO drop
 # TODO fix size

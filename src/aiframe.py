@@ -25,5 +25,5 @@ class AIFrame(Frame):
         Frame.pack(self, *args, **kargs)
 
     def pack_forget(self, *args, **kargs):
-        self._game_scene.run = False
+        self._game_scene.restart_game()
         Frame.pack_forget(self, *args, **kargs)

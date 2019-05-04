@@ -98,12 +98,14 @@ class Tetris:
     def __init__(self, speed, w, h):
         """Create game of tetris with field of given size."""
         self._w, self._h = w, h
-        self._field = [[False]*self._w for _ in range(self._h)]
-        self._current_figure = None
-        self._new_figure()
-        self._last_move = Tetris.Move.DoNothing
         self._speed = speed
         self._step_count = 0
+        self._current_figure = None
+        self._field = None
+        self._score = None
+        self._game_is_lost = None
+
+        self.restart()
 
     def rotate_left(self):
         """Set next move to be rotate left.
@@ -150,21 +152,31 @@ class Tetris:
 
         All the basics of game logic implemented here.
         """
+        if self._game_is_lost:
+            raise Exception("Game is already lost.")
+
         clear_below, clear_to_right, clear_to_left = self._get_borders()
 
-        ret = 0
         self._step_count = (self._step_count + 1) % self._speed
         if self._step_count == 0:
             self._pull_figure_down(clear_below)
-            ret = self._drop_full_lines()
+            self._score += self._drop_full_lines()*self._w
 
         self._make_move(clear_to_right, clear_to_left)
         self._last_move = Tetris.Move.DoNothing
-        return ret*self._w
+        self._game_is_lost = self.field_is_filled()
 
     def field_is_filled(self):
         """Check if game is over."""
         return any(self._field[0])
+
+    def restart(self):
+        """Restart game."""
+        self._field = [[False]*self._w for _ in range(self._h)]
+        self._new_figure()
+        self._last_move = Tetris.Move.DoNothing
+        self._game_is_lost = False
+        self._score = 0
 
     def _new_figure(self):
         figure_type = choice(list(Tetris.Figure.Type))
@@ -270,3 +282,15 @@ class Tetris:
     def field(self):
         """Get game field."""
         return self._field
+
+    @property
+    def game_is_lost(self):
+        """Check if game is lost."""
+        return self._game_is_lost
+
+    @property
+    def score(self):
+        """Get game score."""
+        return self._score
+
+# TODO if y == self._h - 1 or self._field[y + 1][x]: list index out of range
