@@ -19,7 +19,7 @@ class GameScene(Canvas):
         self._width = 10
         self._height = 20
         self._cell_size = 20
-        self._step = 10
+        self._step = 5
 
         self.config(
             width=(self._width*self._cell_size),
@@ -36,7 +36,7 @@ class GameScene(Canvas):
                     y*self._cell_size + self._cell_size
                 )
 
-        self._game = Tetris(10, self._width, self._height)
+        self._game = Tetris(self._width, self._height)
         self.bind("<Key-Up>", lambda event: self._game.rotate_left())
         self.bind("<Key-Left>", lambda event: self._game.move_left())
         self.bind("<Key-Right>", lambda event: self._game.move_right())
@@ -72,6 +72,7 @@ class GameScene(Canvas):
         """
         self._game.restart()
         self._run = False
+        self._clear()
 
     def _clear(self):
         for item in self.find_all():
@@ -104,15 +105,5 @@ class GameScene(Canvas):
     def run(self, value):
         self._run = value
 
-    @property
-    def step(self):
-        return self._step
-
-    @step.setter
-    def step(self, value):
-        self._step = value
-
-
-# TODO rise speed
 # TODO drop
 # TODO fix size

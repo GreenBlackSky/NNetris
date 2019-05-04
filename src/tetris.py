@@ -95,10 +95,10 @@ class Tetris:
         MoveRight = auto()
         Drop = auto()
 
-    def __init__(self, speed, w, h):
+    def __init__(self, w, h):
         """Create game of tetris with field of given size."""
         self._w, self._h = w, h
-        self._speed = speed
+        self._speed = 20
         self._step_count = 0
         self._current_figure = None
         self._field = None
@@ -160,7 +160,13 @@ class Tetris:
         self._step_count = (self._step_count + 1) % self._speed
         if self._step_count == 0:
             self._pull_figure_down(clear_below)
-            self._score += self._drop_full_lines()*self._w
+            new_score = self._score + self._drop_full_lines()*self._w
+            if new_score and \
+                    new_score % 100 == 0 and \
+                    new_score != self._score and \
+                    self._speed > 0:
+                self._speed -= 1
+            self._score = new_score
 
         self._make_move(clear_to_right, clear_to_left)
         self._last_move = Tetris.Move.DoNothing
