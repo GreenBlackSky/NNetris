@@ -104,7 +104,7 @@ class Tetris:
         self._field = None
         self._score = None
         self._game_is_lost = None
-
+        self._super_speed = False
         self.restart()
 
     def rotate_left(self):
@@ -158,7 +158,7 @@ class Tetris:
         clear_below, clear_to_right, clear_to_left = self._get_borders()
 
         self._step_count = (self._step_count + 1) % self._speed
-        if self._step_count == 0:
+        if self._step_count == 0 or self._super_speed:
             self._pull_figure_down(clear_below)
             new_score = self._score + self._drop_full_lines()*self._w
             if new_score and \
@@ -215,6 +215,7 @@ class Tetris:
             for x, y in self._figure_cells():
                 self._field[y][x] = True
             self._new_figure()
+            self._super_speed = False
 
     def _drop_full_lines(self):
         full_lines = [y for y in range(self._h) if all(self._field[y])]
@@ -299,7 +300,12 @@ class Tetris:
         """Get game score."""
         return self._score
 
-# TODO drop
+    def super_speed_on(self):
+        self._super_speed = True
+
+    def super_speed_off(self):
+        self._super_speed = False
+
 # TODO remake controller
 # TODO optimize a little
 # TODO if y == self._h - 1 or self._field[y + 1][x]: list index out of range

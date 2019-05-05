@@ -41,6 +41,11 @@ class GameScene(Canvas):
         self.bind("<Shift-Up>", lambda event: self._game.rotate_right())
         self.bind("<Key-Left>", lambda event: self._game.move_left())
         self.bind("<Key-Right>", lambda event: self._game.move_right())
+        self.bind("<Key-Down>", lambda event: self._game.super_speed_on())
+        self.bind(
+            "<KeyRelease-Down>",
+            lambda event: self._game.super_speed_off()
+        )
         self._run = False
         self.update()
 
