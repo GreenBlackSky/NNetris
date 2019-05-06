@@ -52,6 +52,10 @@ class Tetris:
             """Return iterator of cells."""
             return iter(self._cells)
 
+        def __contains__(self, coords):
+            x, y = coords
+            return (x - self._x, y - self._y) in self._cells
+
         def rotate_left(self):
             """Rotate figure left."""
             new_cells = set()
@@ -233,15 +237,9 @@ class Tetris:
                 return True
         return False
 
-    @property
-    def current_figure(self):
-        """Get current falling figure."""
-        return self._current_figure
-
-    @property
-    def field(self):
-        """Get game field."""
-        return self._field
+    def cell(self, x, y):
+        """Check if given cell is occupied"""
+        return self._field[y][x] or (x, y) in self._current_figure
 
     @property
     def game_is_lost(self):
@@ -253,6 +251,5 @@ class Tetris:
         """Get game score."""
         return self._score
 
-# TODO remake controller
 # TODO optimize a little
 # TODO if y == self._h - 1 or self._field[y + 1][x]: list index out of range

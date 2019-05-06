@@ -76,7 +76,6 @@ class GameScene(Canvas):
         self._game.update()
         self.master.score = self._game.score
         self._clear()
-        self._draw_figure()
         self._draw_filled_cells()
 
         self.after(self._step, self.update)
@@ -94,19 +93,10 @@ class GameScene(Canvas):
         for item in self.find_all():
             self.itemconfig(item, fill='white')
 
-    def _draw_figure(self):
-        fig_x, fig_y = self._game.current_figure.x, self._game.current_figure.y
-        for x, y in self._game.current_figure:
-            item = self.find_closest(
-                (fig_x + x + 0.5)*self._cell_size,
-                (fig_y + y + 0.5)*self._cell_size
-            )
-            self.itemconfig(item, fill='green')
-
     def _draw_filled_cells(self):
-        for y, line in enumerate(self._game.field):
-            for x, val in enumerate(line):
-                if val:
+        for x in range(self._width):
+            for y in range(self._height):
+                if self._game.cell(x, y):
                     item = self.find_closest(
                         (x + 0.5)*self._cell_size,
                         (y + 0.5)*self._cell_size
@@ -115,12 +105,17 @@ class GameScene(Canvas):
 
     @property
     def run(self):
+        """Check if game is running.
+
+        If it is not, update method still schedules self-calls,
+        but do nothing aside of it.
+        """
         return self._run
 
     @run.setter
     def run(self, value):
+        """Make game stop updating itself or run again."""
         self._run = value
 
 # TODO fix size
-# TODO move bindings into controller
 # TODO move update scheduling into controller

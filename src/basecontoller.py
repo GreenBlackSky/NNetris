@@ -17,6 +17,7 @@ class Move(Enum):
 class BaseController:
 
     def __init__(self):
+        """Create BaseController."""
         self._last_move = Move.DoNothing
 
     def rotate_left(self):
@@ -44,6 +45,10 @@ class BaseController:
         self._last_move = Move.NormalSpeed
 
     def get_move(self):
+        """Get last move made.
+
+        Set next last move to DoNothing.
+        """
         move = self._last_move
         self._last_move = Move.DoNothing
         return move
