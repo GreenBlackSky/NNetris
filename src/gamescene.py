@@ -5,6 +5,7 @@ from tkinter import Canvas
 from time import sleep
 
 from tetris import Tetris
+from basecontoller import BaseController
 
 
 class GameScene(Canvas):
@@ -36,15 +37,24 @@ class GameScene(Canvas):
                     y*self._cell_size + self._cell_size
                 )
 
-        self._game = Tetris(self._width, self._height)
-        self.bind("<Key-Up>", lambda event: self._game.rotate_left())
-        self.bind("<Shift-Up>", lambda event: self._game.rotate_right())
-        self.bind("<Key-Left>", lambda event: self._game.move_left())
-        self.bind("<Key-Right>", lambda event: self._game.move_right())
-        self.bind("<Key-Down>", lambda event: self._game.super_speed_on())
+        self._controller = BaseController()
+        self._game = Tetris(
+            self._controller,
+            self._width,
+            self._height
+        )
+
+        self.bind("<Key-Up>", lambda event: self._controller.rotate_left())
+        self.bind("<Shift-Up>", lambda event: self._controller.rotate_right())
+        self.bind("<Key-Left>", lambda event: self._controller.move_left())
+        self.bind("<Key-Right>", lambda event: self._controller.move_right())
+        self.bind(
+            "<Key-Down>",
+            lambda event: self._controller.super_speed_on()
+        )
         self.bind(
             "<KeyRelease-Down>",
-            lambda event: self._game.super_speed_off()
+            lambda event: self._controller.super_speed_off()
         )
         self._run = False
         self.update()

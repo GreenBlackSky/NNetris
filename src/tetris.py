@@ -2,6 +2,7 @@
 
 from random import randint, choice
 from enum import Enum, auto
+from basecontoller import Move
 
 
 class Tetris:
@@ -85,19 +86,10 @@ class Tetris:
             """Set y coordinate of figure top left corner."""
             self._y = value
 
-    class Move(Enum):
-        """Accessible moves."""
-
-        DoNothing = auto()
-        RotateLeft = auto()
-        RotateRight = auto()
-        MoveLeft = auto()
-        MoveRight = auto()
-        Drop = auto()
-
-    def __init__(self, w, h):
+    def __init__(self, mind, w, h):
         """Create game of tetris with field of given size."""
         self._w, self._h = w, h
+        self._mind = mind
         self._speed = 20
         self._step_count = 0
         self._current_figure = None
@@ -106,46 +98,6 @@ class Tetris:
         self._game_is_lost = None
         self._super_speed = False
         self.restart()
-
-    def rotate_left(self):
-        """Set next move to be rotate left.
-
-        Command is executed after update is called and
-        only if possible.
-        """
-        self._last_move = Tetris.Move.RotateLeft
-
-    def rotate_right(self):
-        """Set next move to be rotate right.
-
-        Command is executed after update is called and
-        only if possible.
-        """
-        self._last_move = Tetris.Move.RotateRight
-
-    def move_left(self):
-        """Set next move to be move left.
-
-        Command is executed after update is called and
-        only if possible.
-        """
-        self._last_move = Tetris.Move.MoveLeft
-
-    def move_right(self):
-        """Set next move to be move right.
-
-        Command is executed after update is called and
-        only if possible.
-        """
-        self._last_move = Tetris.Move.MoveRight
-
-    def drop(self):
-        """Set next move to be drop.
-
-        Command is executed after update is called and
-        only if possible.
-        """
-        self._last_move = Tetris.Move.Drop
 
     def update(self):
         """Update the situation in the game.
@@ -169,7 +121,6 @@ class Tetris:
             self._score = new_score
 
         self._make_move(clear_to_right, clear_to_left)
-        self._last_move = Tetris.Move.DoNothing
         self._game_is_lost = self.field_is_filled()
 
     def field_is_filled(self):
@@ -180,7 +131,6 @@ class Tetris:
         """Restart game."""
         self._field = [[False]*self._w for _ in range(self._h)]
         self._new_figure()
-        self._last_move = Tetris.Move.DoNothing
         self._game_is_lost = False
         self._score = 0
 
@@ -233,9 +183,9 @@ class Tetris:
         return len(full_lines)
 
     def _make_move(self, clear_to_right, clear_to_left):
-        descision = self._last_move
+        descision = self._mind.get_move()
 
-        if descision == Tetris.Move.RotateLeft:
+        if descision == Move.RotateLeft:
             self._current_figure.rotate_left()
             if self._figure_intersects():
                 self._current_figure.x += 1
@@ -245,7 +195,7 @@ class Tetris:
                 self._current_figure.x += 1
                 self._current_figure.rotate_right()
 
-        elif descision == Tetris.Move.RotateRight:
+        elif descision == Move.RotateRight:
             self._current_figure.rotate_right()
             if self._figure_intersects():
                 self._current_figure.x -= 1
@@ -255,16 +205,19 @@ class Tetris:
                 self._current_figure.x -= 1
                 self._current_figure.rotate_left()
 
-        elif descision == Tetris.Move.MoveLeft and clear_to_left:
+        elif descision == Move.MoveLeft and clear_to_left:
             self._current_figure.x -= 1
 
-        elif descision == Tetris.Move.MoveRight and clear_to_right:
+        elif descision == Move.MoveRight and clear_to_right:
             self._current_figure.x += 1
 
-        elif descision == Tetris.Move.Drop:
-            pass
+        elif descision == Move.SuperSpeed:
+            self._super_speed = True
 
-        elif descision == Tetris.Move.DoNothing:
+        elif descision == Move.NormalSpeed:
+            self._super_speed = False
+
+        elif descision == Move.DoNothing:
             pass
 
     def _figure_cells(self):
@@ -299,12 +252,6 @@ class Tetris:
     def score(self):
         """Get game score."""
         return self._score
-
-    def super_speed_on(self):
-        self._super_speed = True
-
-    def super_speed_off(self):
-        self._super_speed = False
 
 # TODO remake controller
 # TODO optimize a little
